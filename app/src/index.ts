@@ -10,11 +10,10 @@ const MONGO_URL = `mongodb://127.0.0.1:27017/`;
 mongoose.connect(MONGO_URL, {
     dbName: "exploradorPlanetario", 
     }).then(()=>{
-        console.log("conectada la database");
-
-
-    }).catch((error)=> console.log(error));
-
+        console.log("conectado la BD");
+    }).catch((error) => {
+        console.error('Error al conectar a MongoDB:', error);
+      });
 //Se utilizan las rutas 
 app.use("/", router);
 
