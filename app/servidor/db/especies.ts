@@ -13,7 +13,6 @@ const EspeciesSchema = new mongoose.Schema({
     peso: {
         type: Number,
         required: true,
-        unique: true,
     },
     habitat: {
         type: String,

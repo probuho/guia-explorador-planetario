@@ -1,7 +1,6 @@
 import express from "express";
 import { Router } from "express";
 import EspeciesController from "../controllers/EspeciesController";
-import App from "../../src/App";
 
 const router = express.Router();
 

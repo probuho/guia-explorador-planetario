@@ -1,8 +1,10 @@
-import express from "express";
+import express, { response } from "express";
 import mongoose from "mongoose";
-import router from "../servidor/routes/index";
+import router from "./routes/index";
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 //Crear la conexión con la base de datos

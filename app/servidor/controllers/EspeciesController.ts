@@ -6,10 +6,11 @@ class EspeciesController{
     getALLEspecies = async (request: express.Request, response: express.Response) => {
         try{
             const especies = await EspeciesModel.find();
-            response.status(200).json({data: especies});
+            response.status(200).json(especies);
             return;
         } catch (error) {
-            response.sendStatus(400);
+            console.error(error);
+            response.status(500).json({ error: "No se pudo recibir los datos de las especies" });
             return;
         }
     }
@@ -18,10 +19,14 @@ class EspeciesController{
         try{
             const {id} = request.params;
             const especies = await EspeciesModel.findById(id);
-            response.status(200).json({data: especies});
+            if (!especies) {
+                return response.status(404).json({ error: "Especie no encontrada" });
+            }
+            response.status(200).json(especies);
             return;
         } catch (error) {
-            response.sendStatus(400);
+            console.error(error);
+            response.status(500).json({ error: "No se pudo recibir los datos de la especie" });
             return;
         }
     }
@@ -42,7 +47,8 @@ class EspeciesController{
             response.status(201).json({message: "¡Especie registrada!", data: especies});
             return;
         } catch (error) {
-            response.sendStatus(400);
+            console.error(error);
+            response.status(500).json({ error: "No se pudo enviar los datos de la especie" });;
             return;
         }
     }
@@ -50,36 +56,44 @@ class EspeciesController{
     updateEspecies = async (request: express.Request, response: express.Response) => {
         try{
             const {id} = request.params;
-            const {nombre, tamano, peso, habitat, alimentacion, tipo, descripcion } = request.body;
-            const especies = await EspeciesModel.findById(id);
-            if(especies){
-                especies.nombre = nombre;
-                especies.tamano = tamano;
-                especies.peso = peso;
-                especies.habitat = habitat;
-                especies.alimentacion = alimentacion;
-                especies.tipo = tipo;
-                especies.descripcion = descripcion;
-                await especies.save();
-                response.status(200).json({message: "¡Especie actualizada!", data: especies});
-                return;
+            const updatedEspecies = request.body;
+            // Validar y convertir tamano y peso
+            if (typeof updatedEspecies.tamano === 'string') {
+                updatedEspecies.tamano = Number(updatedEspecies.tamano);
+                if (isNaN(updatedEspecies.tamano)) {
+                    return response.status(400).json({ error: "Valor invalido para tamaño" });
+                }
             }
-            response.sendStatus(400);
+
+            if (typeof updatedEspecies.peso === 'string') {
+                updatedEspecies.peso = Number(updatedEspecies.peso);
+                if (isNaN(updatedEspecies.peso)) {
+                    return response.status(400).json({ error: "Valor invalido para peso" });
+                }
+            }
+
+            const especies = await EspeciesModel.findByIdAndUpdate(id, updatedEspecies, { new: true, runValidators: true }); //Actualiza y retorna el nuevo documento
+            if (!especies) {
+                return response.status(404).json({ error: "Especie no encontrada" });
+            }
+            response.status(200).json(especies);
             return;
         } catch (error) {
-            response.sendStatus(400);
+            console.error(error);
+            response.status(500).json({ error: "No se pudo actualizar la especie" });;
             return;
         }
     }
 //controlador para encontrar a la especie por id y borrarla
     deleteEspecies = async (request: express.Request, response: express.Response) => {
         try{
-            const {id } = request.params;
+            const {id} = request.params;
             await EspeciesModel.findByIdAndDelete({_id: id});
             response.status(200).json({message: "Especie borrada"});
             return;
         } catch (error) {
-            response.sendStatus(400);
+            console.error(error);
+            response.status(500).json({ error: "No se pudo borrar los datos de la especie" });
             return;
         }
     }

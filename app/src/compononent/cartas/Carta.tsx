@@ -1,6 +1,6 @@
 import React from "react";
 //Tipos
-import { TipoCarta } from "../../setup";
+import TipoCarta from "../interfaces/TipoCarta";
 import { Wrapper, ImagenFrente, ImagenReverso } from "./Carta.styles";
 
 
