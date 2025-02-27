@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import { useNavigate } from "react-router-dom";
+import RespuestaError from "../compononent/interfaces/Error";
 
 const CrearEspecies = () => {
     const [nombre, setNombre] = useState<unknown | null>(null);
@@ -10,6 +11,7 @@ const CrearEspecies = () => {
     const [alimentacion, setAlimentacion] = useState<unknown | null>(null);
     const [tipo, setTipo] = useState<unknown | null>(null);
     const [descripcion, setDescripcion] = useState<unknown | null>(null);
+    const [, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const Submit = (e: { preventDefault: () => void; }) => {
@@ -19,7 +21,20 @@ const CrearEspecies = () => {
             console.log(result)
             navigate("/especies")
             })
-        .catch(err => console.log(err));
+            .catch((error: unknown) => {
+                if (axios.isAxiosError(error)) {
+                    const axiosError = error as AxiosError;
+                    if (axiosError.response) {
+                        const responseData = axiosError.response.data as RespuestaError;
+                        setError(responseData.error || "Error al registrar la especie");
+                    } else {
+                        setError("Error al registrar la especie");
+                    }
+                } else {
+                    setError("Error al registrar la especie");
+                }
+                console.error("Error al registrar la especie:", error);
+            });
     };
     return (
         <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">

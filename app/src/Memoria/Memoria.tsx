@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Carta from '../compononent/cartas/Carta';
-//Configuración
+import axios, {AxiosError} from "axios";
+import Usuario from "../compononent/interfaces/Usuario";
+import RespuestaError from "../compononent/interfaces/Error";
+//Configuracion
 import { crearTablero } from './setup';
 //Tipos
 import TipoCarta from "../compononent/interfaces/TipoCarta";
@@ -16,10 +19,21 @@ const Memoria = () => {
   const [movimientosLimite, setMovimientosLimite] = useState(40); // Limite de movimientos iniciales
   const [tiempoRestante, setTiempoRestante] = useState(tiempoLimite); //Contador de tiempo restante
   const [movimientosRestantes, setMovimientosRestantes] = useState(movimientosLimite); //Contador de movimientos restantes
-  const [puntuacion, setPuntuacion] = useState(0); //Puntuacion
-  const [puntuacionTotal, setPuntuacionTotal] = useState(0); //Puntuación total entre partidas
+  const [puntuacion, setPuntuacion] = useState(0); //Puntuacion de la partida actual
+  const [user, setUser] = useState<Usuario | null>(null); //Usuario
+  const [puntuacionTotal, setPuntuacionTotal] = useState(0); //Puntuacion total entre partidas
   const [gameOver, setGameOver] = useState(false); //Finalizo la partida
+  const [, setError] = useState<string | null>(null); //Errores
   const [, setVictoria] = useState(false); //Victoria
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("usuario");
+    if (storedUser && storedUser !== "undefined") { // Verificación de si usuario está undefined
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      console.log("Datos de usuario en el localStorage:", parsedUser);
+    }
+  }, []);
   
   const resetGame = useCallback(() => { //Determinar las condiciones de las dificultades e inicio de juego
     setCartas(crearTablero(dificultad));
@@ -44,13 +58,69 @@ const Memoria = () => {
         setTiempoRestante(tiempoLimite);
         setMovimientosRestantes(movimientosLimite);
         setPuntuacion(0);
+        setPuntuacionTotal(0);
         setGameOver(false);
         setVictoria(false);
   }, [dificultad, tiempoLimite, movimientosLimite]);
 
   useEffect(() => {
-    resetGame(); // Call resetGame when difficulty changes
-  }, [dificultad, resetGame]); // Correct dependencies
+    const fetchPuntuacionTotal = async () => {
+        if (user) {
+          console.log("Fetching la puntuación del usuario:", user);
+            try {
+                const response = await axios.get(`http://localhost:4000/memoria/${user.id}`);
+                setPuntuacionTotal(response.data.reduce((sum: number, puntuacion: { puntuacion: string }) => sum + parseInt(puntuacion.puntuacion), 0));
+            } catch (error: unknown) {
+                if (axios.isAxiosError(error)) {
+                    const axiosError = error as AxiosError;
+                    if (axiosError.response) {
+                        const responseData = axiosError.response.data as RespuestaError;
+                        setError(responseData.error || "Error al traer la puntuación total");
+                    } else {
+                        setError("Error al traer la puntuación total");
+                    }
+                } else {
+                    setError("Error al traer la puntuación total");
+                }
+              console.error("Error al traer la puntuación total:", error);
+              setPuntuacionTotal(0);
+            }
+        }
+    };
+
+    fetchPuntuacionTotal(); 
+  }, [user]);
+
+  useEffect(() => {
+    if (gameOver && user) {
+        const saveScore = async () => {
+            try {
+                await axios.post(`http://localhost:4000/memoria`, { 
+                  userId: user.id,
+                  puntuacion: puntuacion.toString()
+              });
+            } catch (error: unknown) {
+                if (axios.isAxiosError(error)) {
+                    const axiosError = error as AxiosError;
+                    if (axiosError.response) {
+                        const responseData = axiosError.response.data as RespuestaError;
+                        setError(responseData.error || "Error al almacenar la puntuación");
+                    } else {
+                        setError("Error al almacenar la puntuación");
+                    }
+                } else {
+                    setError("Error al almacenar la puntuación");
+                }
+              console.error("Error al almacenar la puntuación:", error);
+            }
+        };
+        saveScore();
+    }
+  }, [gameOver, puntuacion, user]);
+
+  useEffect(() => {
+    resetGame(); // resetGame ocurre cuando se cambia de dificultad
+  }, [dificultad, resetGame]); 
 
   useEffect(() => { //Determinar el fin del juego y la puntuacion
       if (cartas.length > 0 && coincidenciaPares === cartas.length / 2  && !gameOver) {
@@ -88,7 +158,7 @@ const Memoria = () => {
     return () => clearInterval(reloj);
   }, [gameOver, tiempoRestante]);
 
-  useEffect(() => { // Actualizacion de puntuacion total
+  useEffect(() => { // Actualización de puntuación total
     if (gameOver) { // Solo se ejecuta cuando la partida ha terminado
         setPuntuacionTotal(prevPuntuacion => prevPuntuacion + puntuacion);
     }
@@ -96,7 +166,7 @@ const Memoria = () => {
   
   const handleCartaClick = (cartaActual: TipoCarta) =>{ //Logica del juego en si
     //Logica para prevenir más clicks si la partida acabo
-    if (gameOver) {  // Prevent clicks if game is over
+    if (gameOver) {  // Prevenir mas clicks si la partida termino
       return;
     }
     //Voltear las cartas
@@ -108,21 +178,51 @@ const Memoria = () => {
     }
     //En caso de que coincida el par
     if(cartaSeleccionada.coincidenciaCartaId === cartaActual.id){
+      console.log("Coincidencia encontrada:", cartaSeleccionada, cartaActual)
         setCoincidenciaPares(prev => prev + 1);
         setCartas(prev =>
             prev.map(carta => 
                 carta.id === cartaSeleccionada.id || carta.id === cartaActual.id ? { ...carta, clickable: false}: carta)
             );
         setCartaSeleccionada(undefined);
+        if (user && gameOver) { // Actualizar la puntuación total en la base de datos cada vez que se encuentra un par
+          console.log("Fetching la puntuación del usuario:", user);
+          const updatePuntuacionTotal = async () => { 
+              try {
+                await axios.post(`http://localhost:4000/memoria`, {
+                  userId: user.id,
+                  puntuacion: puntuacion.toString()
+                });
+                const response2 = await axios.get(`http://localhost:4000/memoria/${user.id}`);
+                setPuntuacionTotal(response2.data.reduce((sum: number, puntuacion: { puntuacion: string }) => sum + parseInt(puntuacion.puntuacion), 0));
+              } catch (error: unknown) {
+                  if (axios.isAxiosError(error)) {
+                      const axiosError = error as AxiosError;
+                      if (axiosError.response) {
+                          const responseData = axiosError.response.data as RespuestaError;
+                          setError(responseData.error || "Error al actualizar la puntuación total");
+                      } else {
+                          setError("Error al actualizar la puntuación total");
+                      }
+                  } else {
+                      setError("Error al actualizar la puntuación total");
+                  }
+                  console.error("Error al actualizar la puntuación total:", error);
+              }
+          };
+          updatePuntuacionTotal();
+        }
         return;
     }
+
     //Si no hay coincidencia en el par estas se voltean tras un segundo
     setTimeout(() => {
-        setCartas(prev =>
-            prev.map(carta => 
-                carta.id === cartaSeleccionada.id || carta.id === cartaActual.id ? { ...carta, volteada: false, clickable: true}: carta)
-        )
+      setCartas(prev =>
+          prev.map(carta => 
+              carta.id === cartaSeleccionada.id || carta.id === cartaActual.id ? { ...carta, volteada: false, clickable: true}: carta)
+      )
     }, 600);
+
     //Si no hay más movimientos
     if (movimientosRestantes === 0 && !cartaActual.volteada) {
       return;
@@ -131,37 +231,39 @@ const Memoria = () => {
         setMovimientosRestantes(prevMovimientos => prevMovimientos - 1);
     }
     setCartaSeleccionada(undefined);
-  };
+
+  }
 
   const handleNewGame = () => {
     resetGame();
   };
 
 
-  return (
-    <div>
+    return (
       <div>
-        <label htmlFor="dificultad">Dificultad:</label>
-        <select id="dificultad" value={dificultad} onChange={e => setDificultad(e.target.value)}>
-          <option value="facil">Fácil</option>
-          <option value="normal">Normal</option>
-          <option value="dificil">Difícil</option>
-        </select>
+        <div>
+          <label htmlFor="dificultad">Dificultad:</label>
+          <select id="dificultad" value={dificultad} onChange={e => setDificultad(e.target.value)}>
+            <option value="facil">Fácil</option>
+            <option value="normal">Normal</option>
+            <option value="dificil">Difícil</option>
+          </select>
+        </div>
+          <div>Tiempo Restante: {tiempoRestante}</div>
+          <div>Movimientos Restantes: {movimientosRestantes}</div>
+          <div>Puntuacion: {puntuacion}</div>
+          <div>Puntuacion Total: {puntuacionTotal}</div>
+            {gameOver && (
+              <button onClick={handleNewGame} disabled={!gameOver}>Nueva Partida</button>
+            )}
+          <Grid>
+            {cartas.map(carta => (
+              <Carta key={carta.id} carta={carta} callback={handleCartaClick} />
+            ))}
+          </Grid>
       </div>
-        <div>Tiempo Restante: {tiempoRestante}</div>
-        <div>Movimientos Restantes: {movimientosRestantes}</div>
-        <div>Puntuación: {puntuacion}</div>
-        <div>Puntuación Total: {puntuacionTotal}</div>
-          {gameOver && (
-            <button onClick={handleNewGame} disabled={!gameOver}>Nueva Partida</button>
-          )}
-        <Grid>
-          {cartas.map(carta => (
-            <Carta key={carta.id} carta={carta} callback={handleCartaClick} />
-          ))}
-        </Grid>
-    </div>
-  );
+    );
 };
+
 
 export default Memoria;

@@ -1,21 +1,25 @@
-import express, { response } from "express";
-import mongoose from "mongoose";
+import express, { Request, Response, NextFunction } from "express";
 import router from "./routes/index";
 import cors from "cors";
+import { PrismaClient } from '@prisma/client';
 
 const app = express();
+const prisma = new PrismaClient();
 app.use(cors());
 app.use(express.json());
 
-//Crear la conexión con la base de datos
-const MONGO_URL = `mongodb://127.0.0.1:27017/`;
-mongoose.connect(MONGO_URL, {
-    dbName: "exploradorPlanetario", 
-    }).then(()=>{
-        console.log("conectado la BD");
-    }).catch((error) => {
-        console.error('Error al conectar a MongoDB:', error);
-      });
+// Middleware para errores
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+    console.error(err.stack); 
+    res.status(500).send('Hubo un error inesperado'); 
+});
+
+//Se crea la conexion con la base de datos con prisma
+app.use((req: Request, res, next) => {
+    req.prisma = prisma;
+    next();
+});
+
 //Se utilizan las rutas 
 app.use("/", router);
 

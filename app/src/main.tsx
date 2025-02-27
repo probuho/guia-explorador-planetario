@@ -1,10 +1,10 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client'; // Correct import
+import { createRoot } from 'react-dom/client'; 
 import App from './App';
 
 const container = document.getElementById('root') as HTMLElement;
-const root = createRoot(container); // Create a root.
+const root = createRoot(container); // Se crea una raíz.
 root.render(<React.StrictMode>
   <App />
-</React.StrictMode>); // Render the app inside of it.
+</React.StrictMode>); // Carga la aplicación en su interior.
 
