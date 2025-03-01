@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
 import useAuth from "../context/useAuth";
 import RespuestaError from "../compononent/interfaces/Error";
+import "../styles.scss";
 
 const PaginaLogin = () => {
     const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ const PaginaLogin = () => {
     useEffect(() => { //Verificacion de si ya se ha iniciado sesion, de ser el caso es redirigido
         const token = localStorage.getItem('token');
         if (token) {
-            navigate('/'); 
+            navigate('/especies'); 
         }
     }, [navigate]);
 
@@ -30,7 +31,7 @@ const PaginaLogin = () => {
             });
 
             login(response.data.user, response.data.token);
-            navigate('/'); // Se redirige al iniciar sesion
+            navigate('/especies'); // Se redirige al iniciar sesion
         } catch (error: unknown) { 
             console.error("Hubo un error durante el inicio de sesión:", error);
 
@@ -61,9 +62,9 @@ const PaginaLogin = () => {
     };
 
     return (
-        <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-           <div className="w-50 bg-white rounded p-3">
-                {error && <p style={{ color: "red" }}>{error}</p>}
+        <div className="d-flex vh-100 justify-content-center align-items-center">
+           <div className="w-50 white-bg rounded p-3">
+                {error && <p className="mensaje-error">{error}</p>}
                 <form onSubmit={handleSubmit}>
                     <h2>Iniciar Sesión</h2>
                     <div className="mb-2">
@@ -99,7 +100,7 @@ const PaginaLogin = () => {
                             onChange={() => setMostrarContraseña(!mostrarContraseña)}
                         />
                     </label>
-                    <button type="submit" className="btn btn-success">Iniciar Sesión</button>
+                    <button type="submit" className="btn">Iniciar Sesión</button>
                 </form>
             </div>
         </div>

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import axios, {AxiosError} from "axios";
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import RespuestaError from "../compononent/interfaces/Error";
+import "../styles.scss";
 
 const CrearEspecies = () => {
     const [nombre, setNombre] = useState<unknown | null>(null);
@@ -11,7 +13,7 @@ const CrearEspecies = () => {
     const [alimentacion, setAlimentacion] = useState<unknown | null>(null);
     const [tipo, setTipo] = useState<unknown | null>(null);
     const [descripcion, setDescripcion] = useState<unknown | null>(null);
-    const [, setError] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     const Submit = (e: { preventDefault: () => void; }) => {
@@ -37,8 +39,8 @@ const CrearEspecies = () => {
             });
     };
     return (
-        <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-           <div className="w-50 bg-white rounded p-3">
+        <div className="d-flex vh-100 justify-content-center align-items-center">
+           <div className="w-50 white-bg rounded p-3">
                 <form onSubmit={Submit}>
                     <h2>Agregar Especie</h2>
                     <div className="mb-2">
@@ -47,12 +49,12 @@ const CrearEspecies = () => {
                         onChange={(e) => setNombre(e.target.value)}/>
                     </div>
                     <div className="mb-2">
-                        <label htmlFor="tamano">Tamaño</label>
+                        <label htmlFor="tamano">Tamaño (cm)</label>
                         <input type="text" placeholder="Introduzca el tamaño de la especie" className="form-control" id="tamano"
                         onChange={(e) => setTamano(e.target.value)}/>
                     </div>
                     <div className="mb-2">
-                        <label htmlFor="peso">Peso</label>
+                        <label htmlFor="peso">Peso (kg)</label>
                         <input type="text" placeholder="Introduzca el peso de la especie" className="form-control" id="peso"
                         onChange={(e) => setPeso(e.target.value)}/>
                     </div>
@@ -77,6 +79,8 @@ const CrearEspecies = () => {
                         onChange={(e) => setDescripcion(e.target.value)}/>
                     </div>
                     <button className="btn btn-success">Registrar</button>
+                    <Link to={"/especies"} className="btn btn-danger">Cancelar</Link>
+                    {error && <p className="mensaje-error">{error}</p>}
                 </form>
             </div>
         </div>

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios, {AxiosError} from "axios";
+import { Link } from "react-router-dom";
+import "../styles.scss";
 //Interface
 import Especie from "../compononent/interfaces/Especies";
 import RespuestaError from "../compononent/interfaces/Error";
@@ -84,8 +86,8 @@ const ActualizarEspecies = () => {
         return <div>Datos de especie no encontrados</div>;
     }
     return (
-        <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-           <div className="w-50 bg-white rounded p-3">
+        <div className="d-flex vh-100 justify-content-center align-items-center">
+           <div className="w-50 white-bg rounded p-3">
                 <form onSubmit={Update}>
                     <h2>Actualizar Especie</h2>
                     <div className="mb-2">
@@ -94,7 +96,7 @@ const ActualizarEspecies = () => {
                         value={especie.nombre || ""} onChange={(e) => setEspecie({ ...especie, nombre: e.target.value })}/>
                     </div>
                     <div className="mb-2">
-                        <label htmlFor="tamano">Tamaño</label>
+                        <label htmlFor="tamano">Tamaño (cm)</label>
                         <input type="number" placeholder="Introduzca el tamaño de la especie" className="form-control" id="tamano"
                         value={especie.tamano || ""} onChange={(e) => {
                             const tamano = Number(e.target.value); // Convierte el dato de string a número
@@ -102,7 +104,7 @@ const ActualizarEspecies = () => {
                         }}/>
                     </div>
                     <div className="mb-2">
-                        <label htmlFor="peso">Peso</label>
+                        <label htmlFor="peso">Peso (kg)</label>
                         <input type="number" placeholder="Introduzca el peso de la especie" className="form-control" id="peso"
                         value={especie.peso || ""} onChange={(e) => {
                             const peso = Number(e.target.value);
@@ -130,7 +132,9 @@ const ActualizarEspecies = () => {
                         value={especie.descripcion || ""} onChange={(e) => setEspecie({ ...especie, descripcion: e.target.value })}/>
                     </div>
                     <button className="btn btn-success">Actualizar</button>
+                    <Link to={"/especies"} className="btn btn-danger">Cancelar</Link>
                 </form>
+                {error && <p className="mensaje-error">{error}</p>}
             </div>
         </div>
     )

@@ -9,6 +9,7 @@ import { crearTablero } from './setup';
 import TipoCarta from "../compononent/interfaces/TipoCarta";
 // Estilos
 import { Grid } from '../App.styles';
+import "../styles.scss";
 
 const Memoria = () => {
   const [dificultad, setDificultad] = useState('facil'); // Dificultad predeterminada
@@ -23,7 +24,8 @@ const Memoria = () => {
   const [user, setUser] = useState<Usuario | null>(null); //Usuario
   const [puntuacionTotal, setPuntuacionTotal] = useState(0); //Puntuacion total entre partidas
   const [gameOver, setGameOver] = useState(false); //Finalizo la partida
-  const [, setError] = useState<string | null>(null); //Errores
+  const [volteada, setVolteada] = useState(false); //Estado para la animación de volteada
+  const [error, setError] = useState<string | null>(null); //Errores
   const [, setVictoria] = useState(false); //Victoria
 
   useEffect(() => {
@@ -47,7 +49,7 @@ const Memoria = () => {
                 setMovimientosLimite(25);
                 break;
             case 'dificil':
-                setTiempoLimite(20);
+                setTiempoLimite(30);
                 setMovimientosLimite(15);
                 break;
             default:
@@ -166,7 +168,7 @@ const Memoria = () => {
   
   const handleCartaClick = (cartaActual: TipoCarta) =>{ //Logica del juego en si
     //Logica para prevenir más clicks si la partida acabo
-    if (gameOver) {  // Prevenir mas clicks si la partida termino
+    if (gameOver || volteada) {  // Prevenir mas clicks si la partida termino
       return;
     }
     //Voltear las cartas
@@ -214,13 +216,15 @@ const Memoria = () => {
         }
         return;
     }
-
-    //Si no hay coincidencia en el par estas se voltean tras un segundo
+    setVolteada(true); // Bloquear clicks mientras se voltean las cartas
+    //Si no hay coincidencia en el par estas se voltean tras un momento
     setTimeout(() => {
       setCartas(prev =>
           prev.map(carta => 
               carta.id === cartaSeleccionada.id || carta.id === cartaActual.id ? { ...carta, volteada: false, clickable: true}: carta)
       )
+      setCartaSeleccionada(undefined);
+      setVolteada(false); // Permitir clics nuevamente
     }, 600);
 
     //Si no hay más movimientos
@@ -240,22 +244,25 @@ const Memoria = () => {
 
 
     return (
-      <div>
-        <div>
-          <label htmlFor="dificultad">Dificultad:</label>
-          <select id="dificultad" value={dificultad} onChange={e => setDificultad(e.target.value)}>
-            <option value="facil">Fácil</option>
-            <option value="normal">Normal</option>
-            <option value="dificil">Difícil</option>
-          </select>
-        </div>
+      <div className="primary-bg p-3">
+        <div className="white-bg rounded p-3 mb-3">
+          <div className="mb-3">
+            <label htmlFor="dificultad">Dificultad:</label>
+            <select id="dificultad" value={dificultad} onChange={e => setDificultad(e.target.value)}>
+              <option value="facil">Fácil</option>
+              <option value="normal">Normal</option>
+              <option value="dificil">Difícil</option>
+            </select>
+          </div>
           <div>Tiempo Restante: {tiempoRestante}</div>
           <div>Movimientos Restantes: {movimientosRestantes}</div>
           <div>Puntuacion: {puntuacion}</div>
           <div>Puntuacion Total: {puntuacionTotal}</div>
+        </div>
             {gameOver && (
-              <button onClick={handleNewGame} disabled={!gameOver}>Nueva Partida</button>
+              <button onClick={handleNewGame} disabled={!gameOver} className="btn mb-3">Nueva Partida</button>
             )}
+            {error && <p className="mensaje-error">{error}</p>}
           <Grid>
             {cartas.map(carta => (
               <Carta key={carta.id} carta={carta} callback={handleCartaClick} />

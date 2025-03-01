@@ -3,6 +3,7 @@ import axios, { AxiosError} from "axios";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
 import RespuestaError from "../compononent/interfaces/Error";
+import "../styles.scss";
 
 const PaginaRegistro = () => {
     const [nombre, setNombre] = useState<unknown | null>(null);
@@ -20,7 +21,7 @@ const PaginaRegistro = () => {
     useEffect(() => { // Verificación de si ya se esta registrado
         const token = localStorage.getItem('token');
         if (token) {
-            navigate('/'); // Redirecciona si ya esta iniciada la sesión
+            navigate('/especies'); // Redirecciona si ya esta iniciada la sesión
         }
     }, [navigate]);
 
@@ -41,7 +42,7 @@ const PaginaRegistro = () => {
 
             if (response.status === 201) { // Verificacion de status exitoso
                 login(response.data.user, response.data.token);
-                navigate("/");
+                navigate("/especies");
             } else {
                 // En caso de errores con el servidor
                 setErrorRegistro(response.data.error || "Registro fallido");
@@ -77,8 +78,8 @@ const PaginaRegistro = () => {
         };
         
     return (
-        <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-           <div className="w-50 bg-white rounded p-3">
+        <div className="d-flex vh-100 justify-content-center align-items-center">
+           <div className="w-50 white-bg rounded p-3">
                 <form onSubmit={Submit}>
                     <h2>Registrar Usuario</h2>
                     <div className="mb-2">
@@ -153,9 +154,9 @@ const PaginaRegistro = () => {
                             onChange={() => setMostrarContraseña(!mostrarContraseña)}
                         />
                     </label>
-                    <button className="btn btn-success">Registrarse</button>
-                    {errorRegistro && <p style={{ color: "red" }}>{errorRegistro}</p>} {/* Render condicional en caso de error */}
-                    {errorGeneral && <p style={{ color: "red" }}>{errorGeneral}</p>}
+                    <button className="btn">Registrarse</button>
+                    {errorRegistro && <p className="mensaje-error">{errorRegistro}</p>} {/* Render condicional en caso de error */}
+                    {errorGeneral && <p className="mensaje-error">{errorGeneral}</p>}
                 </form>
             </div>
         </div>
