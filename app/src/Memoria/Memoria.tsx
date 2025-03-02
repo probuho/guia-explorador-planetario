@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useCallback } from "react";
-import Carta from '../compononent/cartas/Carta';
+import Carta from "../compononent/cartas/Carta";
 import axios, {AxiosError} from "axios";
 import Usuario from "../compononent/interfaces/Usuario";
 import RespuestaError from "../compononent/interfaces/Error";
+import useAuth from "../context/useAuth";
 //Configuracion
-import { crearTablero } from './setup';
+import { crearTablero } from "./setup";
 //Tipos
 import TipoCarta from "../compononent/interfaces/TipoCarta";
 // Estilos
-import { Grid } from '../App.styles';
+import { Grid } from "../App.styles";
 import "../styles.scss";
 
 const Memoria = () => {
@@ -27,15 +28,14 @@ const Memoria = () => {
   const [volteada, setVolteada] = useState(false); //Estado para la animación de volteada
   const [error, setError] = useState<string | null>(null); //Errores
   const [, setVictoria] = useState(false); //Victoria
+  const { auth } = useAuth(); //Datos del usuario
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("usuario");
-    if (storedUser && storedUser !== "undefined") { // Verificación de si usuario está undefined
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      console.log("Datos de usuario en el localStorage:", parsedUser);
-    }
-  }, []);
+    if (auth?.user) { // Se usan los datos del usuario en el contexto
+      setUser(auth.user);
+      console.log("Datos de usuario traidos del contexto:", auth.user);
+  }
+}, [auth]);
   
   const resetGame = useCallback(() => { //Determinar las condiciones de las dificultades e inicio de juego
     setCartas(crearTablero(dificultad));
@@ -60,17 +60,20 @@ const Memoria = () => {
         setTiempoRestante(tiempoLimite);
         setMovimientosRestantes(movimientosLimite);
         setPuntuacion(0);
-        setPuntuacionTotal(0);
         setGameOver(false);
         setVictoria(false);
   }, [dificultad, tiempoLimite, movimientosLimite]);
 
   useEffect(() => {
     const fetchPuntuacionTotal = async () => {
-        if (user) {
-          console.log("Fetching la puntuación del usuario:", user);
-            try {
-                const response = await axios.get(`http://localhost:4000/memoria/${user.id}`);
+        if (auth?.user && auth?.token) { //Verificaión de si existe token de usuario
+          console.log("Fetching la puntuación del usuario:", auth.user);
+          try {
+                const response = await axios.get(`http://localhost:4000/memoria/${auth.user.id}`, {
+                  headers: {
+                      Authorization: `Bearer ${auth.token}` // Incluye el token en el header
+                  }
+                });
                 setPuntuacionTotal(response.data.reduce((sum: number, puntuacion: { puntuacion: string }) => sum + parseInt(puntuacion.puntuacion), 0));
             } catch (error: unknown) {
                 if (axios.isAxiosError(error)) {
@@ -91,15 +94,19 @@ const Memoria = () => {
     };
 
     fetchPuntuacionTotal(); 
-  }, [user]);
+  }, [auth]);
 
   useEffect(() => {
-    if (gameOver && user) {
+    if (gameOver && auth?.user && auth?.token) {
         const saveScore = async () => {
             try {
                 await axios.post(`http://localhost:4000/memoria`, { 
-                  userId: user.id,
+                  userId: auth.user.id,
                   puntuacion: puntuacion.toString()
+              }, {
+                headers: {
+                    Authorization: `Bearer ${auth.token}` // Incluye el token en el header
+                }
               });
             } catch (error: unknown) {
                 if (axios.isAxiosError(error)) {
@@ -118,7 +125,7 @@ const Memoria = () => {
         };
         saveScore();
     }
-  }, [gameOver, puntuacion, user]);
+  }, [gameOver, puntuacion, auth]);
 
   useEffect(() => {
     resetGame(); // resetGame ocurre cuando se cambia de dificultad
@@ -240,6 +247,34 @@ const Memoria = () => {
 
   const handleNewGame = () => {
     resetGame();
+        //Refetching la puntuación.
+        const fetchPuntuacionTotal = async () => {
+            if (auth?.user && auth?.token) {
+                console.log("Fetching la puntuación del usuario:", auth.user);
+                try {
+                    const response = await axios.get(`http://localhost:4000/memoria/${auth.user.id}`, {
+                        headers: {
+                            Authorization: `Bearer ${auth.token}`
+                        }
+                    });
+                    setPuntuacionTotal(response.data.reduce((sum: number, puntuacion: { puntuacion: string }) => sum + parseInt(puntuacion.puntuacion), 0));
+                } catch (error: unknown) {
+                  if (axios.isAxiosError(error)) {
+                      const axiosError = error as AxiosError;
+                      if (axiosError.response) {
+                          const responseData = axiosError.response.data as RespuestaError;
+                          setError(responseData.error || "Error al traer la puntuación total");
+                      } else {
+                          setError("Error al traer la puntuación total");
+                      }
+                  } else {
+                      setError("Error al traer la puntuación total");
+                  }
+                  console.error("Error al traer la puntuación total:", error);
+                }
+            }
+        };
+      fetchPuntuacionTotal();
   };
 
 

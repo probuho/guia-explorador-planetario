@@ -1,7 +1,18 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express, { Request, Response, NextFunction } from "express";
 import router from "./routes/index";
 import cors from "cors";
 import { PrismaClient } from '@prisma/client';
+//Generador de llave secret de ser necesario:
+/* import crypto from 'crypto';
+
+const generateSecretKey = (length = 64) => {
+  return crypto.randomBytes(length).toString('hex');
+};
+
+const newSecretKey = generateSecretKey();
+console.log(newSecretKey); */
 
 const app = express();
 const prisma = new PrismaClient();

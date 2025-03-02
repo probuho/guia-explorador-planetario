@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios, {AxiosError} from "axios";
 import { Link } from "react-router-dom";
+import useAuth from "../context/useAuth";
 import "../styles.scss";
 //Interface
 import Especie from "../compononent/interfaces/Especies";
@@ -13,12 +14,17 @@ const ActualizarEspecies = () => {
     const [loading, setLoading] = useState(true); 
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { auth } = useAuth();
 
     useEffect(() => {
         const fetchEspecie = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:4000/especies/${id}`);
+                const response = await axios.get(`http://localhost:4000/especies/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${auth?.token}`
+                    }
+                });
                 setEspecie(response.data);
             } catch (err: unknown) {
                 if (axios.isAxiosError(err)) {
@@ -38,7 +44,7 @@ const ActualizarEspecies = () => {
             };
         
         fetchEspecie();
-    }, [id]);
+    }, [id, auth?.token]);
 
     const Update = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
@@ -55,7 +61,11 @@ const ActualizarEspecies = () => {
             descripcion: especie.descripcion,
         };
 
-        axios.put(`http://localhost:4000/especies/${id}`, dataToUpdate)
+        axios.put(`http://localhost:4000/especies/${id}`, dataToUpdate, {
+            headers: {
+                Authorization: `Bearer ${auth?.token}`
+            }
+        })
         .then(result => {
             console.log(result)
             navigate("/especies")

@@ -30,7 +30,7 @@ const PaginaLogin = () => {
                 contraseña,
             });
 
-            login(response.data.user, response.data.token);
+            login(response.data.user, response.data.accessToken, response.data.refreshToken);
             navigate('/especies'); // Se redirige al iniciar sesion
         } catch (error: unknown) { 
             console.error("Hubo un error durante el inicio de sesión:", error);
@@ -60,6 +60,13 @@ const PaginaLogin = () => {
             }
         }
     };
+
+    useEffect(() => {
+        const authData = localStorage.getItem('auth');
+        if (authData) {
+            navigate('/especies');
+        }
+    }, [navigate]);
 
     return (
         <div className="d-flex vh-100 justify-content-center align-items-center">

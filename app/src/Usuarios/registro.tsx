@@ -19,8 +19,8 @@ const PaginaRegistro = () => {
     const navigate = useNavigate();
 
     useEffect(() => { // Verificación de si ya se esta registrado
-        const token = localStorage.getItem('token');
-        if (token) {
+        const authData = localStorage.getItem('auth');
+        if (authData) {
             navigate('/especies'); // Redirecciona si ya esta iniciada la sesión
         }
     }, [navigate]);
@@ -41,7 +41,7 @@ const PaginaRegistro = () => {
             });
 
             if (response.status === 201) { // Verificacion de status exitoso
-                login(response.data.user, response.data.token);
+                login(response.data.user, response.data.accessToken, response.data.refreshToken);
                 navigate("/especies");
             } else {
                 // En caso de errores con el servidor
