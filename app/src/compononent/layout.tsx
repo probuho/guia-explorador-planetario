@@ -4,7 +4,7 @@ import useAuth from '../context/useAuth';
 import "../styles.scss";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-    const { loggedIn, user, logout } = useAuth();
+    const { auth, logout } = useAuth();
     const navigate = useNavigate();
 
     const handleLogout = () => { //Redirección y limpieza de valores al cerrar sesión
@@ -18,9 +18,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 <nav>
                     <Link to="/especies" className='link'>Especies</Link>
                     <Link to="/memoria" className='link'>Memoria</Link>
-                    {loggedIn ? (
+                    {auth?.user ? (
                         <>  {/* Se muestra informacion del usuario y se cierra sesion */}
-                            <span>{user?.nickname || user?.nombre || 'User'}</span>
+                            <span>{auth.user?.nickname || auth.user?.nombre || 'Usuario'}</span>
                             <button type="button" className="btn" onClick={handleLogout}>Cerrar sesion</button>
                         </>
                     ) : (

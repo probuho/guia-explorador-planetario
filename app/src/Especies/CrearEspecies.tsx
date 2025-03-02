@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios, {AxiosError} from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../context/useAuth";
 import RespuestaError from "../compononent/interfaces/Error";
 import "../styles.scss";
 
@@ -15,10 +16,15 @@ const CrearEspecies = () => {
     const [descripcion, setDescripcion] = useState<unknown | null>(null);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const { auth } = useAuth();
 
     const Submit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        axios.post("http://localhost:4000/especies", {nombre, tamano, peso, habitat, alimentacion, tipo, descripcion })
+        axios.post("http://localhost:4000/especies", {nombre, tamano, peso, habitat, alimentacion, tipo, descripcion }, {
+            headers: {
+                Authorization: `Bearer ${auth?.token}` 
+            }
+        })
         .then(result => {
             console.log(result)
             navigate("/especies")
