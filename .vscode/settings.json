@@ -24,5 +24,6 @@
     "files.associations": {
         "*.embeddedhtml": "html",
         "*.txt": "bg3txt"
-    }
+    },
+    "CodeGPT.apiKey": "CodeGPT Plus Beta"
 }
