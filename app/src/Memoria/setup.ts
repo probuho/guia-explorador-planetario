@@ -1,15 +1,15 @@
-import carta1 from '../img/cartas/carta_1.jpg';
-import carta2 from '../img/cartas/carta_2.jpg';
-import carta3 from '../img/cartas/carta_3.jpg';
-import carta4 from '../img/cartas/carta_4.jpg';
-import carta5 from '../img/cartas/carta_5.jpg';
-import carta6 from '../img/cartas/carta_6.jpg';
-import carta7 from '../img/cartas/carta_7.jpg';
-import carta8 from '../img/cartas/carta_8.jpg';
-import carta9 from '../img/cartas/carta_9.jpg';
-import carta10 from '../img/cartas/carta_10.jpg';
+import carta1 from '../img/cartas/carta_1.webp';
+import carta2 from '../img/cartas/carta_2.webp';
+import carta3 from '../img/cartas/carta_3.webp';
+import carta4 from '../img/cartas/carta_4.webp';
+import carta5 from '../img/cartas/carta_5.webp';
+import carta6 from '../img/cartas/carta_6.webp';
+import carta7 from '../img/cartas/carta_7.webp';
+import carta8 from '../img/cartas/carta_8.webp';
+import carta9 from '../img/cartas/carta_9.webp';
+import carta10 from '../img/cartas/carta_10.webp';
 // cartaback
-import cartaReverso from '../img/cartas/carta_reverso.jpg';
+import cartaReverso from '../img/cartas/carta_reverso.webp';
 // Importar Utils
 import { shuffleArray } from './utils';
 //Import interfaz de las cartas

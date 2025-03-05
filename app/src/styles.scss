@@ -1,0 +1,190 @@
+// Variables
+$primary-color: #2D3142;
+$secondary-color: #4F5D75;
+$white-color: #FFFFFF;
+$enfasis-color: #EF8354;
+$button-color: #6F8354;
+$border-color: #BFC0C0;
+
+// Tipografías
+$heading1-font: 'Alegreya SC', serif;
+$heading2-font: 'Rubik', sans-serif;
+$body-font: 'Rubik', sans-serif;
+$button-font: 'Kanit', sans-serif;
+
+// Tamaños de texto
+$heading1-size: 32px;
+$heading2-size: 24px;
+$body-size: 16px;
+$small-size: 14px;
+$button-size: 16px;
+$footer-size: 12px;
+
+// Estilos generales
+body, main {
+    background-color: $primary-color;
+    color: $primary-color;
+    font-family: $body-font;
+    font-size: $body-size;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: $heading1-font;
+    font-size: $heading1-size;
+    font-weight: bold;
+    color: $primary-color;
+}
+
+h2 {
+    font-family: $heading2-font;
+    font-size: $heading2-size;
+    font-weight: 600;
+    color: $secondary-color;
+}
+
+p, span, div {
+    font-family: $body-font;
+    font-size: $body-size;
+    color: $primary-color;
+}
+
+small {
+    font-family: $body-font;
+    font-size: $small-size;
+    color: $secondary-color;
+}
+
+button, .btn {
+    font-family: $button-font;
+    font-size: $button-size;
+    font-weight: bold;
+    color: $white-color;
+    background-color: $button-color;
+    margin: 3px;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input, textarea, select {
+    font-family: $body-font;
+    font-size: $small-size;
+    color: $primary-color;
+    border: 1px solid $border-color;
+    padding: 8px;
+    border-radius: 5px;
+
+    &::placeholder {
+        color: $border-color;
+    }
+}
+
+header {
+    background-color: $white-color;
+    color: $enfasis-color;
+    font-family: $button-font;
+    font-size: $body-size;
+    margin: 5px;
+    padding: 3px;
+    text-align: right;
+}
+
+.link {
+    color: $enfasis-color;
+    padding: 3px;
+}
+
+footer {
+    font-family: $body-font;
+    font-size: $footer-size;
+    color: $border-color;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.enfasis {
+  color:$enfasis-color;
+}
+
+.white-bg{
+  background-color:$white-color;
+}
+
+.primary-bg{
+  background-color:$primary-color;
+  color: $white-color;
+}
+
+.border-bottom{
+  border-bottom: 1px solid $border-color;
+}
+
+.mensaje-error {
+    color: red;
+    font-size: $small-size;
+    margin-top: 10px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+        border: 1px solid $border-color;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: adjust($border-color, 30%);
+    }
+
+    .btn {
+        margin-right: 5px;
+    }
+}
+
+.cargando-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.cargando-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: $enfasis-color;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: girar 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes girar {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 28px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    body {
+        font-size: 14px;
+    }
+
+    button, .btn {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+}
