@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
+import "../styles.scss";
 //Interface
-import Especie from "../compononent/interfaces/Especies";
+import Especie from "../componente/interfaces/Especies";
+import RespuestaError from "../componente/interfaces/Error";
 
 function Especies () {
     const [especies, setEspecies] = useState<Especie[]>([]);
@@ -12,14 +14,25 @@ function Especies () {
     useEffect(() => {
         setLoading(true);
         axios.get("http://localhost:4000/especies")
-        .then((result) => {
-            setEspecies(result.data);
-            setLoading(false);})
-        .catch(err => {
-            console.error("Error al recibir las especies:", err);
-            setError("La carga de datos de las especies fallo.");
-            setLoading(false);
-        });
+            .then((result) => {
+                setEspecies(result.data);
+                setLoading(false);
+            })
+            .catch((error: unknown) => {
+                if (axios.isAxiosError(error)) {
+                    const axiosError = error as AxiosError;
+                    if (axiosError.response) {
+                        const responseData = axiosError.response.data as RespuestaError;
+                        setError(responseData.error || "La carga de datos de las especies fallo.");
+                    } else {
+                        setError("La carga de datos de las especies fallo.");
+                    }
+                } else {
+                    setError("La carga de datos de las especies fallo.");
+                }
+                console.error("Error al recibir las especies:", error);
+                setLoading(false);
+            });
     }, []);
     if (loading) {
         return <div>Cargando los datos de las especies...</div>; // Mensaje de carga
@@ -33,27 +46,38 @@ function Especies () {
           return <div>No se encontraron datos de las especies.</div>
       }
     
-    const handleDelete = (id) => {
+    const handleDelete = (id: string) => {
         axios.delete("http://localhost:4000/especies/"+id)
         .then(result => {
             console.log(result);
-            setEspecies(especies.filter(especie => especie._id !== id));
+            setEspecies(especies.filter(especie => especie.id !== id));
         })
-        .catch(err => 
-            console.error(err)
-        );
+        .catch((error: unknown) => {
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError;
+                if (axiosError.response) {
+                    const responseData = axiosError.response.data as RespuestaError;
+                    setError(responseData.error || "Error al borrar la especie");
+                } else {
+                    setError("Error al borrar la especie");
+                }
+            } else {
+                setError("Error al borrar la especie");
+            }
+            console.error(error);
+        });
     }
-    
+ 
     return (
-        <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-           <div className="bg-white rounded p-3">
-                <Link to={"/crear"} className="btn btn-success">Añadir</Link>
+        <div className="d-flex vh-100 justify-content-center align-items-center">
+            <div className="white-bg rounded p-3">
+                <Link to={"/crear"} className="btn btn-success">Añadir +</Link>
                 <table className="table">
                     <thead>
                             <tr>
                                 <th>Nombre</th>
-                                <th>Tamaño</th>
-                                <th>Peso</th>
+                                <th>Tamaño (cm)</th>
+                                <th>Peso (kg)</th>
                                 <th>Habitat</th>
                                 <th>Alimentación</th>
                                 <th>Tipo</th>
@@ -62,11 +86,11 @@ function Especies () {
                             </tr>
                     </thead>
                     <tbody>
-                        {especies.length === 0 ? ( // Verificación de si el arraw está vacio (estado inicial o sin data)
+                        {especies.length === 0 ? ( // Verificación de si el array está vacio (estado inicial o sin data)
                                 <tr><td colSpan={8}>No hay datos de especies disponibles en este momento.</td></tr>
                             ) : (
                             especies.map((especie) => (
-                                <tr key={especie._id}>
+                                <tr key={especie.id}>
                                 <td>{especie.nombre}</td>
                                 <td>{especie.tamano}</td>
                                 <td>{especie.peso}</td>
@@ -75,19 +99,20 @@ function Especies () {
                                 <td>{especie.tipo}</td>
                                 <td>{especie.descripcion}</td>
                                 <td>
-                                    <Link to={`/actualizar/${especie._id}`} className="btn btn-success">
+                                    <Link to={`/actualizar/${especie.id}`} className="btn btn-success">
                                     Actualizar
                                     </Link>
-                                    <button className="btn btn-danger" onClick={() => handleDelete(especie._id)}>Eliminar</button>
+                                    <button className="btn btn-danger" onClick={() => handleDelete(especie.id)}>Eliminar</button>
                                 </td>
                                 </tr>
                             ))
                         )}
                     </tbody>
                 </table>
+                {error && <p className="mensaje-error">{error}</p>}
             </div>
         </div>
-    )
+    ) 
 };
 
 export default Especies;
