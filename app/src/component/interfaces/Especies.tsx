@@ -1,16 +1,16 @@
 //La interfaz de las especies
 interface Especie {
-    id: string; 
+    _id: string; // Include the _id!
     nombre: string;
-    tamano: number; 
-    peso: number; 
+    tamano: number; // Or string, depending on your data type
+    peso: number; // Or string
     habitat: string;
     alimentacion: string;
     tipo: string;
     descripcion: string;
-    /* createdAt?: string; En caso de que se terminen agregando a la base de datos estos campos
+    createdAt?: string; // Optional properties
     updatedAt?: string;
-    __v?: number; */
+    __v?: number;
 }
 
 export default Especie;
