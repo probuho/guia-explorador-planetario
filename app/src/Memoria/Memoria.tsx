@@ -37,93 +37,93 @@ const Memoria = () => {
   }
 }, [auth]);
   
-  const resetGame = useCallback(() => { //Determinar las condiciones de las dificultades e inicio de juego
-    setCartas(crearTablero(dificultad));
-        switch (dificultad) {
-            case 'facil':
-                setTiempoLimite(60);
-                setMovimientosLimite(40);
-                break;
-            case 'normal':
-                setTiempoLimite(40);
-                setMovimientosLimite(25);
-                break;
-            case 'dificil':
-                setTiempoLimite(30);
-                setMovimientosLimite(15);
-                break;
-            default:
-                setTiempoLimite(60);
-                setMovimientosLimite(40);
-        }
-        setCoincidenciaPares(0);
-        setTiempoRestante(tiempoLimite);
-        setMovimientosRestantes(movimientosLimite);
-        setPuntuacion(0);
-        setGameOver(false);
-        setVictoria(false);
+const resetGame = useCallback(() => { //Determinar las condiciones de las dificultades e inicio de juego
+  setCartas(crearTablero(dificultad));
+      switch (dificultad) {
+          case 'facil':
+              setTiempoLimite(60);
+              setMovimientosLimite(40);
+              break;
+          case 'normal':
+              setTiempoLimite(40);
+              setMovimientosLimite(25);
+              break;
+          case 'dificil':
+              setTiempoLimite(30);
+              setMovimientosLimite(15);
+              break;
+          default:
+              setTiempoLimite(60);
+              setMovimientosLimite(40);
+      }
+      setCoincidenciaPares(0);
+      setTiempoRestante(tiempoLimite);
+      setMovimientosRestantes(movimientosLimite);
+      setPuntuacion(0);
+      setGameOver(false);
+      setVictoria(false);
   }, [dificultad, tiempoLimite, movimientosLimite]);
 
   useEffect(() => {
     const fetchPuntuacionTotal = async () => {
-        if (auth?.user && auth?.token) { //Verificaión de si existe token de usuario
-          console.log("Fetching la puntuación del usuario:", auth.user);
-          try {
-                const response = await axios.get(`http://localhost:4000/memoria/${auth.user.id}`, {
-                  headers: {
-                      Authorization: `Bearer ${auth.token}` // Incluye el token en el header
-                  }
-                });
-                setPuntuacionTotal(response.data.reduce((sum: number, puntuacion: { puntuacion: string }) => sum + parseInt(puntuacion.puntuacion), 0));
-            } catch (error: unknown) {
-                if (axios.isAxiosError(error)) {
-                    const axiosError = error as AxiosError;
-                    if (axiosError.response) {
-                        const responseData = axiosError.response.data as RespuestaError;
-                        setError(responseData.error || "Error al traer la puntuación total");
-                    } else {
-                        setError("Error al traer la puntuación total");
-                    }
-                } else {
-                    setError("Error al traer la puntuación total");
-                }
-              console.error("Error al traer la puntuación total:", error);
-              setPuntuacionTotal(0);
-            }
-        }
-    };
-
-    fetchPuntuacionTotal(); 
-  }, [auth]);
-
-  useEffect(() => {
-    if (gameOver && auth?.user && auth?.token) {
-        const saveScore = async () => {
-            try {
-                await axios.post(`http://localhost:4000/memoria`, { 
-                  userId: auth.user.id,
-                  puntuacion: puntuacion.toString()
-              }, {
+      if (auth?.user && auth?.token) { //Verificaión de si existe token de usuario
+        console.log("Fetching la puntuación del usuario:", auth.user);
+        try {
+              const response = await axios.get(`http://localhost:4000/memoria/${auth.user.id}`, {
                 headers: {
                     Authorization: `Bearer ${auth.token}` // Incluye el token en el header
                 }
               });
-            } catch (error: unknown) {
-                if (axios.isAxiosError(error)) {
-                    const axiosError = error as AxiosError;
-                    if (axiosError.response) {
-                        const responseData = axiosError.response.data as RespuestaError;
-                        setError(responseData.error || "Error al almacenar la puntuación");
-                    } else {
-                        setError("Error al almacenar la puntuación");
-                    }
-                } else {
-                    setError("Error al almacenar la puntuación");
-                }
-              console.error("Error al almacenar la puntuación:", error);
-            }
-        };
-        saveScore();
+              setPuntuacionTotal(response.data.reduce((sum: number, puntuacion: { puntuacion: string }) => sum + parseInt(puntuacion.puntuacion), 0));
+          } catch (error: unknown) {
+              if (axios.isAxiosError(error)) {
+                  const axiosError = error as AxiosError;
+                  if (axiosError.response) {
+                      const responseData = axiosError.response.data as RespuestaError;
+                      setError(responseData.error || "Error al traer la puntuación total");
+                  } else {
+                      setError("Error al traer la puntuación total");
+                  }
+              } else {
+                  setError("Error al traer la puntuación total");
+              }
+            console.error("Error al traer la puntuación total:", error);
+            setPuntuacionTotal(0);
+          }
+      }
+  };
+
+  fetchPuntuacionTotal(); 
+  }, [auth]);
+
+  useEffect(() => {
+    if (gameOver && auth?.user && auth?.token) {
+      const saveScore = async () => {
+          try {
+              await axios.post(`http://localhost:4000/memoria`, { 
+                userId: auth.user.id,
+                puntuacion: puntuacion.toString()
+            }, {
+              headers: {
+                  Authorization: `Bearer ${auth.token}` // Incluye el token en el header
+              }
+            });
+          } catch (error: unknown) {
+              if (axios.isAxiosError(error)) {
+                  const axiosError = error as AxiosError;
+                  if (axiosError.response) {
+                      const responseData = axiosError.response.data as RespuestaError;
+                      setError(responseData.error || "Error al almacenar la puntuación");
+                  } else {
+                      setError("Error al almacenar la puntuación");
+                  }
+              } else {
+                  setError("Error al almacenar la puntuación");
+              }
+            console.error("Error al almacenar la puntuación:", error);
+          }
+      };
+      saveScore();
     }
   }, [gameOver, puntuacion, auth]);
 
@@ -133,25 +133,25 @@ const Memoria = () => {
 
   useEffect(() => { //Determinar el fin del juego y la puntuacion
       if (cartas.length > 0 && coincidenciaPares === cartas.length / 2  && !gameOver) {
-          console.log("Felicidades, has ganado la partida");
-          setVictoria(true);
-          setGameOver(true);
-          let multiplicador = 1;
-          switch (dificultad) {
-              case 'facil':
-                  multiplicador = 1;
-                  break;
-              case 'normal':
-                  multiplicador = 2;
-                  break;
-              case 'dificil':
-                  multiplicador = 5;
-                  break;
-          }
-          const puntuacionPartida = tiempoRestante * movimientosRestantes * multiplicador; //La puntuacion de cada partida
-          setPuntuacion(puntuacionPartida);
-          setGameOver(true);
-          setVictoria(true);
+        console.log("Felicidades, has ganado la partida");
+        setVictoria(true);
+        setGameOver(true);
+        let multiplicador = 1;
+        switch (dificultad) {
+            case 'facil':
+                multiplicador = 1;
+                break;
+            case 'normal':
+                multiplicador = 2;
+                break;
+            case 'dificil':
+                multiplicador = 5;
+                break;
+        }
+        const puntuacionPartida = tiempoRestante * movimientosRestantes * multiplicador; //La puntuacion de cada partida
+        setPuntuacion(puntuacionPartida);
+        setGameOver(true);
+        setVictoria(true);
       }
   }, [cartas.length, coincidenciaPares, dificultad, tiempoRestante, movimientosRestantes, gameOver]);
 

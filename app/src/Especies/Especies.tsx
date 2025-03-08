@@ -67,10 +67,10 @@ function Especies () {
             console.error(error);
         });
     }
-    
+ 
     return (
         <div className="d-flex vh-100 justify-content-center align-items-center">
-           <div className="white-bg rounded p-3">
+            <div className="white-bg rounded p-3">
                 <Link to={"/crear"} className="btn btn-success">Añadir +</Link>
                 <table className="table">
                     <thead>
@@ -112,7 +112,7 @@ function Especies () {
                 {error && <p className="mensaje-error">{error}</p>}
             </div>
         </div>
-    )
+    ) 
 };
 
 export default Especies;

@@ -51,7 +51,7 @@ const ActualizarEspecies = () => {
         if (!especie) return;
 
         // Creación de un nuevo objeto con los datos a actualizar
-        const dataToUpdate = {
+        const dataActualizada = {
             nombre: especie.nombre,
             tamano: especie.tamano,
             peso: especie.peso,
@@ -60,8 +60,7 @@ const ActualizarEspecies = () => {
             tipo: especie.tipo,
             descripcion: especie.descripcion,
         };
-
-        axios.put(`http://localhost:4000/especies/${id}`, dataToUpdate, {
+        axios.put(`http://localhost:4000/especies/${id}`, dataActualizada, {
             headers: {
                 Authorization: `Bearer ${auth?.token}`
             }
