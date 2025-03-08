@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
-import Carta from "../compononent/cartas/Carta";
+import Carta from "../componente/cartas/Carta";
 import axios, {AxiosError} from "axios";
-import Usuario from "../compononent/interfaces/Usuario";
-import RespuestaError from "../compononent/interfaces/Error";
+import Usuario from "../componente/interfaces/Usuario";
+import RespuestaError from "../componente/interfaces/Error";
 import useAuth from "../context/useAuth";
 //Configuracion
 import { crearTablero } from "./setup";
 //Tipos
-import TipoCarta from "../compononent/interfaces/TipoCarta";
+import TipoCarta from "../componente/interfaces/TipoCarta";
 // Estilos
 import { Grid } from "../App.styles";
 import "../styles.scss";

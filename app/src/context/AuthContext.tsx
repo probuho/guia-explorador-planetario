@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios, { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
-import Usuario from "../compononent/interfaces/Usuario";
+import Usuario from "../componente/interfaces/Usuario";
 //Interfaces 
 interface AuthContextType {
     auth: { user: Usuario, token: string } | null;

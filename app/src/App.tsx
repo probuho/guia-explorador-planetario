@@ -2,8 +2,8 @@ import React, { lazy, Suspense } from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.tsx';
 import useAuth from './context/useAuth.tsx';
-import Layout from './compononent/layout.tsx';
-import Cargando from './compononent/Cargando.tsx';
+import Layout from './componente/layout.tsx';
+import Cargando from './componente/Cargando.tsx';
 // Rutas
 const Especies = lazy(() => import('./Especies/Especies.tsx'));
 const CrearEspecies = lazy(() => import('./Especies/CrearEspecies'));

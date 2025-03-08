@@ -13,7 +13,7 @@ import cartaReverso from '../img/cartas/carta_reverso.webp';
 // Importar Utils
 import { shuffleArray } from './utils';
 //Import interfaz de las cartas
-import TipoCarta from '../compononent/interfaces/TipoCarta';
+import TipoCarta from '../componente/interfaces/TipoCarta';
 
 export const crearTablero = (dificultad: string): TipoCarta[] => {
   let cartas: string[] = [];

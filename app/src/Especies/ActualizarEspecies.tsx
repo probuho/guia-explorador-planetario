@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import useAuth from "../context/useAuth";
 import "../styles.scss";
 //Interface
-import Especie from "../compononent/interfaces/Especies";
-import RespuestaError from "../compononent/interfaces/Error";
+import Especie from "../componente/interfaces/Especies";
+import RespuestaError from "../componente/interfaces/Error";
 
 const ActualizarEspecies = () => {
     const {id} = useParams();

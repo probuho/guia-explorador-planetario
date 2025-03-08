@@ -3,7 +3,7 @@ import axios, {AxiosError} from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../context/useAuth";
-import RespuestaError from "../compononent/interfaces/Error";
+import RespuestaError from "../componente/interfaces/Error";
 import "../styles.scss";
 
 const CrearEspecies = () => {

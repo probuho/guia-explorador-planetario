@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import axios, {AxiosError} from "axios";
 import "../styles.scss";
 //Interface
-import Especie from "../compononent/interfaces/Especies";
-import RespuestaError from "../compononent/interfaces/Error";
+import Especie from "../componente/interfaces/Especies";
+import RespuestaError from "../componente/interfaces/Error";
 
 function Especies () {
     const [especies, setEspecies] = useState<Especie[]>([]);
