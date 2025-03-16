@@ -2,6 +2,8 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios, { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 import { useNavigate } from "react-router-dom";
 import Usuario from "../componente/interfaces/Usuario";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 //Interfaces 
 interface AuthContextType {
     auth: { user: Usuario, token: string } | null;
@@ -48,7 +50,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (!refreshToken) {
                 throw new Error("No se encontro un nuevo token");
             }
-            const response = await axios.post("http://localhost:4000/refrescar-token", { refreshToken });
+            const response = await axios.post(`${BACKEND_URL}/refrescar-token`, { refreshToken });
             const { accessToken } = response.data;
             if (auth && auth.user) {
                 setAuth({ user: auth.user, token: accessToken });
@@ -65,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = async () => {
         try {
             console.log("Token being sent:", auth?.token);
-            await axios.post("http://localhost:4000/logout", {}, {
+            await axios.post(`${BACKEND_URL}/logout`, {}, {
                 headers: {
                     Authorization: `Bearer ${auth?.token}`
                 }

@@ -1,99 +1,129 @@
-import express from "express";
-import { EspeciesModel } from "../db/especies";
+import { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 class EspeciesController{
     
 //controlador para mostrar todas las especies
-    getALLEspecies = async (request: express.Request, response: express.Response) => {
+    getALLEspecies = async (req: Request, res: Response) => {
         try{
-            const especies = await EspeciesModel.find();
-            response.status(200).json(especies);
+            const especies = await prisma?.especies.findMany();
+            res.status(200).json(especies);
             return;
         } catch (error) {
             console.error(error);
-            response.status(500).json({ error: "No se pudo recibir los datos de las especies" });
+            res.status(500).json({ error: "No se pudo recibir los datos de las especies" });
             return;
         }
     }
 //controlador para mostrar una especie por id
-    getEspecies = async (request: express.Request, response: express.Response) => {
+    getEspecies = async (req: Request, res: Response) => {
         try{
-            const {id} = request.params;
-            const especies = await EspeciesModel.findById(id);
+            const id = String(req.params.id);
+
+            const especies = await prisma?.especies.findUnique({
+                where: { id: id }, // Uso del id de Prisma
+                select: { // Selección de los campos a cargar
+                    id: true,
+                    nombre: true,
+                    tamano: true,
+                    peso: true,
+                    habitat: true,
+                    alimentacion: true,
+                    tipo: true,
+                    descripcion:true,
+                },
+            });
+            
             if (!especies) {
-                return response.status(404).json({ error: "Especie no encontrada" });
+                return res.status(404).json({ error: "Especie no encontrada" });
             }
-            response.status(200).json(especies);
-            return;
+            console.log(id);
+            res.status(200).json(especies);
         } catch (error) {
             console.error(error);
-            response.status(500).json({ error: "No se pudo recibir los datos de la especie" });
-            return;
+            res.status(500).json({ error: "No se pudo recibir los datos de la especie" });
         }
     }
 //controlador para registrar una nueve especie
-    createEspecies = async (request: express.Request, response: express.Response) => {
+    createEspecies = async (req: Request, res: Response) => {
         try{
-            const {nombre, tamano, peso, habitat, alimentacion, tipo, descripcion } = request.body;
-            const especies = new EspeciesModel({
-                nombre,
-                tamano,
-                peso,
-                habitat,
-                alimentacion,
-                tipo,
-                descripcion
+            const {nombre, tamano, peso, habitat, alimentacion, tipo, descripcion } = req.body;
+            const especies = await prisma?.especies.create({
+                data: { // Los datos se almacenan dentro de la propiedad data debido a como se reciben en el cliente
+                    nombre,
+                    tamano: Number(tamano),
+                    peso: Number(peso),
+                    habitat,
+                    alimentacion,
+                    tipo,
+                    descripcion,
+                },
             });
-            await especies.save();
-            response.status(201).json({message: "¡Especie registrada!", data: especies});
+            res.status(201).json({message: "¡Especie registrada!", data: especies});
             return;
         } catch (error) {
-            console.error(error);
-            response.status(500).json({ error: "No se pudo enviar los datos de la especie" });;
+            console.error("Error al enviar los datos de la especie:", error);
+            res.status(500).json({ error: "No se pudo enviar los datos de la especie" });
             return;
         }
     }
 //controlador para encontrar a la especie por id y actualizar los datos de los campos
-    updateEspecies = async (request: express.Request, response: express.Response) => {
+    updateEspecies = async (req: Request, res: Response) => {
         try{
-            const {id} = request.params;
-            const updatedEspecies = request.body;
+            const id = String(req.params.id);
+            const { nombre, tamano, peso, habitat, alimentacion, tipo, descripcion } = req.body;
+            const updatedEspecies = req.body;
             // Validar y convertir tamano y peso
             if (typeof updatedEspecies.tamano === 'string') {
                 updatedEspecies.tamano = Number(updatedEspecies.tamano);
                 if (isNaN(updatedEspecies.tamano)) {
-                    return response.status(400).json({ error: "Valor invalido para tamaño" });
+                    return res.status(400).json({ error: "Valor invalido para tamaño" });
                 }
             }
 
             if (typeof updatedEspecies.peso === 'string') {
                 updatedEspecies.peso = Number(updatedEspecies.peso);
                 if (isNaN(updatedEspecies.peso)) {
-                    return response.status(400).json({ error: "Valor invalido para peso" });
+                    return res.status(400).json({ error: "Valor invalido para peso" });
                 }
             }
 
-            const especies = await EspeciesModel.findByIdAndUpdate(id, updatedEspecies, { new: true, runValidators: true }); //Actualiza y retorna el nuevo documento
+            const especies = await prisma?.especies.update({
+                where: { id: id },
+                data: {
+                    nombre: nombre !== undefined ? nombre : undefined, // Solo actualizar si se proveé un valor
+                    tamano: tamano !== undefined ? Number(tamano) : undefined,
+                    peso: peso !== undefined ? Number(peso) : undefined,
+                    habitat: habitat !== undefined ? habitat : undefined,
+                    alimentacion: alimentacion !== undefined ? alimentacion : undefined,
+                    tipo: tipo !== undefined ? tipo : undefined,
+                    descripcion: descripcion !== undefined ? descripcion : undefined,
+                },
+            }); //Actualiza y retorna el nuevo documento
             if (!especies) {
-                return response.status(404).json({ error: "Especie no encontrada" });
+                return res.status(404).json({ error: "Especie no encontrada" });
             }
-            response.status(200).json(especies);
+            res.status(200).json(especies);
             return;
         } catch (error) {
             console.error(error);
-            response.status(500).json({ error: "No se pudo actualizar la especie" });;
+            res.status(500).json({ error: "No se pudo actualizar la especie" });
             return;
         }
     }
 //controlador para encontrar a la especie por id y borrarla
-    deleteEspecies = async (request: express.Request, response: express.Response) => {
+    deleteEspecies = async (req: Request, res: Response) => {
         try{
-            const {id} = request.params;
-            await EspeciesModel.findByIdAndDelete({_id: id});
-            response.status(200).json({message: "Especie borrada"});
+            const {id} = req.params;
+            await prisma?.especies.delete({
+                where: { id },
+            });
+            res.status(200).json({message: "Especie borrada"});
             return;
         } catch (error) {
             console.error(error);
-            response.status(500).json({ error: "No se pudo borrar los datos de la especie" });
+            res.status(500).json({ error: "No se pudo borrar los datos de la especie" });
             return;
         }
     }
