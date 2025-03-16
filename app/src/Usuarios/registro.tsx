@@ -5,6 +5,8 @@ import useAuth from "../context/useAuth";
 import RespuestaError from "../componente/interfaces/Error";
 import "../styles.scss";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const PaginaRegistro = () => {
     const [nombre, setNombre] = useState<unknown | null>(null);
     const [apellido, setApellido] = useState<unknown | null>(null);
@@ -36,7 +38,7 @@ const PaginaRegistro = () => {
         }
 
         try {
-            const response = await axios.post("http://localhost:4000/registro", {
+            const response = await axios.post(`${BACKEND_URL}/registro`, {
                 nombre, apellido, nickname, email, contraseña,
             });
 

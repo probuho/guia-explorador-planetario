@@ -6,6 +6,8 @@ import "../styles.scss";
 import Especie from "../componente/interfaces/Especies";
 import RespuestaError from "../componente/interfaces/Error";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 function Especies () {
     const [especies, setEspecies] = useState<Especie[]>([]);
     const [error, setError] = useState<string | null>(null);
@@ -13,7 +15,7 @@ function Especies () {
 
     useEffect(() => {
         setLoading(true);
-        axios.get("http://localhost:4000/especies")
+        axios.get(`${BACKEND_URL}/especies`)
             .then((result) => {
                 setEspecies(result.data);
                 setLoading(false);
@@ -47,7 +49,7 @@ function Especies () {
       }
     
     const handleDelete = (id: string) => {
-        axios.delete("http://localhost:4000/especies/"+id)
+        axios.delete(`${BACKEND_URL}/especies`+id)
         .then(result => {
             console.log(result);
             setEspecies(especies.filter(especie => especie.id !== id));
