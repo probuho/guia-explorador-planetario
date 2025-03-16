@@ -9,14 +9,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
     const handleLogout = () => { //Redirección y limpieza de valores al cerrar sesión
         logout();
-        navigate('/especies');
+        navigate('/');
     };
 
     return (
         <div>
             <header>
                 <nav>
-                    <Link to="/especies" className='link'>Especies</Link>
+                    <Link to="/" className='link'>Especies</Link>
                     <Link to="/memoria" className='link'>Memoria</Link>
                     {auth?.user ? (
                         <>  {/* Se muestra informacion del usuario y se cierra sesion */}

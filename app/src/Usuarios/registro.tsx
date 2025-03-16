@@ -21,7 +21,7 @@ const PaginaRegistro = () => {
     useEffect(() => { // Verificación de si ya se esta registrado
         const authData = localStorage.getItem('auth');
         if (authData) {
-            navigate('/especies'); // Redirecciona si ya esta iniciada la sesión
+            navigate('/'); // Redirecciona si ya esta iniciada la sesión
         }
     }, [navigate]);
 
@@ -42,7 +42,7 @@ const PaginaRegistro = () => {
 
             if (response.status === 201) { // Verificacion de status exitoso
                 login(response.data.user, response.data.accessToken, response.data.refreshToken);
-                navigate("/especies");
+                navigate("/");
             } else {
                 // En caso de errores con el servidor
                 setErrorRegistro(response.data.error || "Registro fallido");

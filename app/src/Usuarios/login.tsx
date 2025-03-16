@@ -16,7 +16,7 @@ const PaginaLogin = () => {
     useEffect(() => { //Verificacion de si ya se ha iniciado sesion, de ser el caso es redirigido
         const token = localStorage.getItem('token');
         if (token) {
-            navigate('/especies'); 
+            navigate('/'); 
         }
     }, [navigate]);
 
@@ -31,7 +31,7 @@ const PaginaLogin = () => {
             });
 
             login(response.data.user, response.data.accessToken, response.data.refreshToken);
-            navigate('/especies'); // Se redirige al iniciar sesion
+            navigate('/'); // Se redirige al iniciar sesion
         } catch (error: unknown) { 
             console.error("Hubo un error durante el inicio de sesión:", error);
 
@@ -64,7 +64,7 @@ const PaginaLogin = () => {
     useEffect(() => {
         const authData = localStorage.getItem('auth');
         if (authData) {
-            navigate('/especies');
+            navigate('/');
         }
     }, [navigate]);
 

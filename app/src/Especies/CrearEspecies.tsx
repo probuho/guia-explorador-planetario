@@ -27,7 +27,7 @@ const CrearEspecies = () => {
         })
         .then(result => {
             console.log(result)
-            navigate("/especies")
+            navigate("/")
             })
             .catch((error: unknown) => {
                 if (axios.isAxiosError(error)) {
@@ -85,7 +85,7 @@ const CrearEspecies = () => {
                         onChange={(e) => setDescripcion(e.target.value)}/>
                     </div>
                     <button className="btn btn-success">Registrar</button>
-                    <Link to={"/especies"} className="btn btn-danger">Cancelar</Link>
+                    <Link to={"/"} className="btn btn-danger">Cancelar</Link>
                     {error && <p className="mensaje-error">{error}</p>}
                 </form>
             </div>

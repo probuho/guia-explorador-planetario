@@ -3,7 +3,7 @@ import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.tsx';
 import useAuth from './context/useAuth.tsx';
 import Layout from './componente/layout.tsx';
-import Cargando from './componente/Cargando.tsx';
+import Cargando from './componente/cargando.tsx';
 // Rutas
 const Especies = lazy(() => import('./Especies/Especies.tsx'));
 const CrearEspecies = lazy(() => import('./Especies/CrearEspecies'));

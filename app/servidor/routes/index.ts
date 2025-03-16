@@ -1,9 +1,9 @@
 import express from "express";
 import { Router } from "express";
-import EspeciesController from "../controllers/EspeciesController";
-import UsuariosController from "../controllers/UsuariosController";
-import JuegosController from "../controllers/JuegosController";
-import LoggedIn from "../middleware/Logged-In";
+import EspeciesController from "../controllers/EspeciesController.js";
+import UsuariosController from "../controllers/UsuariosController.js";
+import JuegosController from "../controllers/JuegosController.js";
+import LoggedIn from "../middleware/Logged-In.js";
 
 const router = express.Router();
 
