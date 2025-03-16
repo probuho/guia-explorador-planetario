@@ -1,9 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import express, { Request, Response, NextFunction } from "express";
+import express, { Response, NextFunction } from "express";
 import router from "./routes/index.js";
 import cors from "cors";
 import { PrismaClient } from '@prisma/client';
+import type { Request as ExpressRequest } from 'express';
 //Generador de llave secret de ser necesario:
 /* import crypto from 'crypto';
 
@@ -27,13 +28,13 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Middleware para errores
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: ExpressRequest, res: Response, next: NextFunction) => {
     console.error(err.stack); 
     res.status(500).send('Hubo un error inesperado'); 
 });
 
 //Se crea la conexion con la base de datos con prisma
-app.use((req: Request, res, next) => {
+app.use((req: ExpressRequest, res, next) => {
     req.prisma = prisma;
     next();
 });

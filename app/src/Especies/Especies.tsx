@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios, {AxiosError} from "axios";
+import useAuth from "../context/useAuth";
 import "../styles.scss";
 //Interface
 import Especie from "../componente/interfaces/Especies";
@@ -12,6 +13,7 @@ function Especies () {
     const [especies, setEspecies] = useState<Especie[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true)
+    const { auth } = useAuth();
 
     useEffect(() => {
         setLoading(true);
@@ -49,7 +51,11 @@ function Especies () {
       }
     
     const handleDelete = (id: string) => {
-        axios.delete(`${BACKEND_URL}/especies`+id)
+        axios.delete(`${BACKEND_URL}/especies/${id}`, {
+            headers: {
+                Authorization: `Bearer ${auth?.token}`, // Incluye el token del contexto
+            },
+        })
         .then(result => {
             console.log(result);
             setEspecies(especies.filter(especie => especie.id !== id));

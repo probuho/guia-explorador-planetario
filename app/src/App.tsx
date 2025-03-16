@@ -25,7 +25,7 @@ function App () {
         <Suspense fallback={<Cargando />}>
           <Layout>
             <Routes>
-              <Route path='/especies' element={<Especies />}></Route>
+              <Route path='/' element={<Especies />}></Route>
               <Route path="/iniciar-sesion" element={<PaginaLogin />} />
               <Route path="/registro" element={<PaginaRegistro />} />
               <Route path='/memoria' element={<Memoria />}></Route>

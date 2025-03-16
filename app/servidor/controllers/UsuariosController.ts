@@ -7,6 +7,9 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 const TokensInvalidos: Set<string> = new Set(); // Lista negra de tokens
+interface AuthPayload extends jwt.JwtPayload {
+    userId: string;
+  }
 
 class UsuariosController {
     createUsuarios = async (req: Request, res: Response) => {
@@ -38,9 +41,9 @@ class UsuariosController {
                 return res.status(500).json({message: 'Credenciales invalidas'});
             }
 
-            const accessToken = jwt.sign({userId: user.id}, process.env.JWT_SECRET, { expiresIn: '1d' }); // Generar el token JWT de corta duración
+            const accessToken = jwt.sign({userId: user.id}, process.env.JWT_SECRET  as string, { expiresIn: '1d' }); // Generar el token JWT de corta duración
             console.log("JWT_REFRESH_SECRET:", process.env.JWT_REFRESH_SECRET);
-            const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' }); // Generar el token JWT de larga duración
+            const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET  as string, { expiresIn: '7d' }); // Generar el token JWT de larga duración
             res.status(201).json({
                 message: 'Usuario registrado exitosamente',
                 accessToken,
@@ -67,9 +70,9 @@ class UsuariosController {
                 return res.status(401).json({message: 'Credenciales invalidas'});
             }
 
-            const accessToken = jwt.sign({userId: user.id}, process.env.JWT_SECRET, { expiresIn: '1d' }); // Generar el token JWT de corta duración
+            const accessToken = jwt.sign({userId: user.id}, process.env.JWT_SECRET as string, { expiresIn: '1d' }); // Generar el token JWT de corta duración
             console.log("JWT_REFRESH_SECRET:", process.env.JWT_REFRESH_SECRET);
-            const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' }); // Generar el token JWT de larga duración
+            const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET as string, { expiresIn: '7d' }); // Generar el token JWT de larga duración
             res.status(201).json({
                 accessToken,
                 refreshToken, 
@@ -113,7 +116,7 @@ class UsuariosController {
         }
 
         try {
-            jwt.verify(token, process.env.JWT_SECRET);
+            jwt.verify(token, process.env.JWT_SECRET  as string);
             //TokensInvalidos.add(token); // Agregar token a la lista negra
             res.status(204).send(); // No Content
         } catch (error) {
@@ -134,7 +137,7 @@ class UsuariosController {
         }
 
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET  as string);
             console.log('Token decodificado', decoded);
             console.log('Tiempo actual', new Date());
             next();
@@ -151,8 +154,8 @@ class UsuariosController {
         }
     
         try {
-            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-            const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET  as string) as AuthPayload;
+            const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET  as string, { expiresIn: '1h' });
             res.json({ accessToken });
         } catch (error) {
             return res.status(401).json({ error: 'Token de refresco inválido' });

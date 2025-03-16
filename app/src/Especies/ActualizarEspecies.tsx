@@ -143,7 +143,7 @@ const ActualizarEspecies = () => {
                         value={especie.descripcion || ""} onChange={(e) => setEspecie({ ...especie, descripcion: e.target.value })}/>
                     </div>
                     <button className="btn btn-success">Actualizar</button>
-                    <Link to={"/especies"} className="btn btn-danger">Cancelar</Link>
+                    <Link to={"/"} className="btn btn-danger">Cancelar</Link>
                 </form>
                 {error && <p className="mensaje-error">{error}</p>}
             </div>

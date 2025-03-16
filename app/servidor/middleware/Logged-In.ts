@@ -3,11 +3,12 @@ import jwt from 'jsonwebtoken';
 
 
 const LoggedIn = (req: Request, res: Response, next: NextFunction) => {
-    const token = req.header('Authorization')?.split(' ')[1]; // Se recibe el token de la autorización en el header
+    const authHeader = req.header('Authorization');
+    const token = authHeader?.split(' ')[1]; // Se recibe el token de la autorización en el header
 
     if (token) {
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET  as string);
             // En caso de que el toquen sea valido el usuario esta logged-in
             req.user = decoded; // Si se quiere acceder a la información de usuario en otros middleware o rutas
             return next()
