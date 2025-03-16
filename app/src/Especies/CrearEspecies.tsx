@@ -6,6 +6,8 @@ import useAuth from "../context/useAuth";
 import RespuestaError from "../componente/interfaces/Error";
 import "../styles.scss";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const CrearEspecies = () => {
     const [nombre, setNombre] = useState<unknown | null>(null);
     const [tamano, setTamano] = useState<unknown | null>(null);
@@ -20,7 +22,7 @@ const CrearEspecies = () => {
 
     const Submit = (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-        axios.post("http://localhost:4000/especies", {nombre, tamano, peso, habitat, alimentacion, tipo, descripcion }, {
+        axios.post(`${BACKEND_URL}/especies`, {nombre, tamano, peso, habitat, alimentacion, tipo, descripcion }, {
             headers: {
                 Authorization: `Bearer ${auth?.token}` 
             }

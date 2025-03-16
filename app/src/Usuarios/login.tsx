@@ -5,6 +5,7 @@ import useAuth from "../context/useAuth";
 import RespuestaError from "../componente/interfaces/Error";
 import "../styles.scss";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const PaginaLogin = () => {
     const [email, setEmail] = useState("");
     const [contraseña, setContrasena] = useState("");
@@ -25,7 +26,7 @@ const PaginaLogin = () => {
         setError("");
 
         try {
-            const response = await axios.post("http://localhost:4000/iniciar-sesion", {
+            const response = await axios.post(`${BACKEND_URL}/iniciar-sesion`, {
                 email,
                 contraseña,
             });

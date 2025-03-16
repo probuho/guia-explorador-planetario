@@ -12,6 +12,8 @@ import TipoCarta from "../componente/interfaces/TipoCarta";
 import { Grid } from "../App.styles";
 import "../styles.scss";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Memoria = () => {
   const [dificultad, setDificultad] = useState('facil'); // Dificultad predeterminada
   const [cartas, setCartas] = useState<TipoCarta[]>([]);
@@ -69,7 +71,7 @@ const resetGame = useCallback(() => { //Determinar las condiciones de las dificu
       if (auth?.user && auth?.token) { //Verificaión de si existe token de usuario
         console.log("Fetching la puntuación del usuario:", auth.user);
         try {
-              const response = await axios.get(`http://localhost:4000/memoria/${auth.user.id}`, {
+              const response = await axios.get(`${BACKEND_URL}/memoria/${auth.user.id}`, {
                 headers: {
                     Authorization: `Bearer ${auth.token}` // Incluye el token en el header
                 }
@@ -100,7 +102,7 @@ const resetGame = useCallback(() => { //Determinar las condiciones de las dificu
     if (gameOver && auth?.user && auth?.token) {
       const saveScore = async () => {
           try {
-              await axios.post(`http://localhost:4000/memoria`, { 
+              await axios.post(`${BACKEND_URL}/memoria`, { 
                 userId: auth.user.id,
                 puntuacion: puntuacion.toString()
             }, {
@@ -198,11 +200,11 @@ const resetGame = useCallback(() => { //Determinar las condiciones de las dificu
           console.log("Fetching la puntuación del usuario:", user);
           const updatePuntuacionTotal = async () => { 
               try {
-                await axios.post(`http://localhost:4000/memoria`, {
+                await axios.post(`${BACKEND_URL}/memoria`, {
                   userId: user.id,
                   puntuacion: puntuacion.toString()
                 });
-                const response2 = await axios.get(`http://localhost:4000/memoria/${user.id}`);
+                const response2 = await axios.get(`${BACKEND_URL}/memoria/${user.id}`);
                 setPuntuacionTotal(response2.data.reduce((sum: number, puntuacion: { puntuacion: string }) => sum + parseInt(puntuacion.puntuacion), 0));
               } catch (error: unknown) {
                   if (axios.isAxiosError(error)) {
@@ -252,7 +254,7 @@ const resetGame = useCallback(() => { //Determinar las condiciones de las dificu
             if (auth?.user && auth?.token) {
                 console.log("Fetching la puntuación del usuario:", auth.user);
                 try {
-                    const response = await axios.get(`http://localhost:4000/memoria/${auth.user.id}`, {
+                    const response = await axios.get(`${BACKEND_URL}/memoria/${auth.user.id}`, {
                         headers: {
                             Authorization: `Bearer ${auth.token}`
                         }

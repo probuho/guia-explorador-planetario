@@ -8,6 +8,8 @@ import "../styles.scss";
 import Especie from "../componente/interfaces/Especies";
 import RespuestaError from "../componente/interfaces/Error";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const ActualizarEspecies = () => {
     const {id} = useParams();
     const [especie, setEspecie] = useState<Especie | null>(null);
@@ -20,7 +22,7 @@ const ActualizarEspecies = () => {
         const fetchEspecie = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:4000/especies/${id}`, {
+                const response = await axios.get(`${BACKEND_URL}/especies/${id}`, {
                     headers: {
                         Authorization: `Bearer ${auth?.token}`
                     }
@@ -60,7 +62,7 @@ const ActualizarEspecies = () => {
             tipo: especie.tipo,
             descripcion: especie.descripcion,
         };
-        axios.put(`http://localhost:4000/especies/${id}`, dataActualizada, {
+        axios.put(`${BACKEND_URL}/especies/${id}`, dataActualizada, {
             headers: {
                 Authorization: `Bearer ${auth?.token}`
             }
